@@ -1,56 +1,73 @@
-import { Box, Container, Typography, Button, Paper, Chip } from '@mui/material';
+import { Box, Typography, Paper, Chip } from '@mui/material';
 import {
-  Dashboard as DashboardIcon,
-  Logout as LogoutIcon,
   AdminPanelSettings as AdminIcon,
 } from '@mui/icons-material';
 import useAuth from '../../hooks/useAuth';
 
 const SuperAdminDashboardPage = () => {
-  const { user, handleLogout } = useAuth();
+  const { user } = useAuth();
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4 }}>
-      <Container maxWidth="lg">
-        <Paper sx={{ p: 4 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <AdminIcon sx={{ fontSize: 40, mr: 2, color: 'error.main' }} />
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
-              Super Admin Dashboard
-            </Typography>
-            <Chip
-              label="SUPER ADMIN"
-              color="error"
-              size="small"
-              sx={{ ml: 2 }}
-            />
-          </Box>
+    <Box>
+      {/* Header */}
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+        <AdminIcon sx={{ fontSize: 40, mr: 2, color: 'error.main' }} />
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 0.5 }}>
+            Super Admin Dashboard
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Manage your system and all administrators
+          </Typography>
+        </Box>
+        <Chip
+          label="SUPER ADMIN"
+          color="error"
+          size="small"
+        />
+      </Box>
 
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Welcome, {user?.name || 'Super Admin'}!
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Username: {user?.username}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Email: {user?.email}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Role: {user?.role}
-            </Typography>
-          </Box>
+      {/* Welcome Card */}
+      <Paper sx={{ p: 4 }}>
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+          Welcome, {user?.name || 'Super Admin'}!
+        </Typography>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Username
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            @{user?.username}
+          </Typography>
+          
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Email
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            {user?.email}
+          </Typography>
+          
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Role
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'error.main', fontWeight: 500 }}>
+            Super Administrator
+          </Typography>
+        </Box>
+      </Paper>
 
-          <Button
-            variant="contained"
-            color="error"
-            startIcon={<LogoutIcon />}
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-        </Paper>
-      </Container>
+      {/* Coming Soon Note */}
+      <Paper sx={{ p: 3, mt: 3, bgcolor: 'info.lighter', borderLeft: 4, borderColor: 'info.main' }}>
+        <Typography variant="body1" sx={{ fontWeight: 500, mb: 1 }}>
+          📊 Super Admin Features Coming Soon
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          • Manage all administrators
+          • View system statistics
+          • Monitor login logs
+          • Advanced reporting
+        </Typography>
+      </Paper>
     </Box>
   );
 };

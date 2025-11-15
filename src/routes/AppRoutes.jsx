@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 // Layouts
 import AuthLayout from '../layouts/AuthLayout';
+import MainLayout from '../layouts/MainLayout';
 
 // Route Guards
 import PrivateRoute from './PrivateRoute';
@@ -13,8 +14,13 @@ import LoginPage from '../pages/auth/LoginPage';
 import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 
-// Placeholder Pages (to be created)
+// Admin Pages
 import DashboardPage from '../pages/admin/DashboardPage';
+import ProfilePage from '../pages/admin/ProfilePage';
+import LoginHistoryPage from '../pages/admin/LoginHistoryPage';
+import EditHistoryPage from '../pages/admin/EditHistoryPage';
+
+// Super Admin Pages
 import SuperAdminDashboardPage from '../pages/superAdmin/SuperAdminDashboardPage';
 
 const AppRoutes = () => {
@@ -44,16 +50,28 @@ const AppRoutes = () => {
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         </Route>
 
-        {/* Protected Admin Routes */}
+        {/* Protected Routes with MainLayout */}
         <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          {/* Add more admin routes here */}
+          <Route element={<MainLayout />}>
+            {/* Admin Routes */}
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/login-history" element={<LoginHistoryPage />} />
+            <Route path="/edit-history" element={<EditHistoryPage />} />
+            <Route path="/notifications" element={<div>Notifications Page (Coming Soon)</div>} />
+            <Route path="/attendance" element={<div>Attendance Page (Coming Soon)</div>} />
+            <Route path="/fingerprint" element={<div>Fingerprint Page (Coming Soon)</div>} />
+          </Route>
         </Route>
 
-        {/* Protected Super Admin Routes */}
+        {/* Protected Super Admin Routes with MainLayout */}
         <Route element={<SuperAdminRoute />}>
-          <Route path="/super-admin/dashboard" element={<SuperAdminDashboardPage />} />
-          {/* Add more super admin routes here */}
+          <Route element={<MainLayout />}>
+            <Route path="/super-admin/dashboard" element={<SuperAdminDashboardPage />} />
+            <Route path="/super-admin/admins" element={<div>Manage Admins (Coming Soon)</div>} />
+            <Route path="/super-admin/statistics" element={<div>Statistics (Coming Soon)</div>} />
+            <Route path="/super-admin/login-logs" element={<div>Login Logs (Coming Soon)</div>} />
+          </Route>
         </Route>
 
         {/* 404 Not Found */}
