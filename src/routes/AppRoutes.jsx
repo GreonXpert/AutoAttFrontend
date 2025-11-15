@@ -22,6 +22,9 @@ import EditHistoryPage from '../pages/admin/EditHistoryPage';
 
 // Super Admin Pages
 import SuperAdminDashboardPage from '../pages/superAdmin/SuperAdminDashboardPage';
+import ManageAdminsPage from '../pages/superAdmin/ManageAdminsPage';
+import StatisticsPage from '../pages/superAdmin/StatisticsPage';
+import LoginLogsPage from '../pages/superAdmin/LoginLogsPage';
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -68,9 +71,9 @@ const AppRoutes = () => {
         <Route element={<SuperAdminRoute />}>
           <Route element={<MainLayout />}>
             <Route path="/super-admin/dashboard" element={<SuperAdminDashboardPage />} />
-            <Route path="/super-admin/admins" element={<div>Manage Admins (Coming Soon)</div>} />
-            <Route path="/super-admin/statistics" element={<div>Statistics (Coming Soon)</div>} />
-            <Route path="/super-admin/login-logs" element={<div>Login Logs (Coming Soon)</div>} />
+            <Route path="/super-admin/admins" element={<ManageAdminsPage />} />
+            <Route path="/super-admin/statistics" element={<StatisticsPage />} />
+            <Route path="/super-admin/login-logs" element={<LoginLogsPage />} />
           </Route>
         </Route>
 
