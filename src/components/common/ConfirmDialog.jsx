@@ -2,10 +2,12 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
+  DialogContentText,
   Button,
+  Box,
   CircularProgress,
+  TextField,
 } from '@mui/material';
 import { Warning as WarningIcon } from '@mui/icons-material';
 
@@ -14,17 +16,16 @@ const ConfirmDialog = ({
   onClose,
   onConfirm,
   title = 'Confirm Action',
-  message = 'Are you sure you want to proceed?',
+  message,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
   confirmColor = 'primary',
   isLoading = false,
   showWarningIcon = false,
+  textField = null, // { label, value, onChange, type, helperText }
 }) => {
   const handleConfirm = () => {
-    if (onConfirm) {
-      onConfirm();
-    }
+    onConfirm();
   };
 
   return (
@@ -34,13 +35,35 @@ const ConfirmDialog = ({
       maxWidth="sm"
       fullWidth
     >
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        {showWarningIcon && <WarningIcon color="warning" />}
-        {title}
+      <DialogTitle>
+        {showWarningIcon && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <WarningIcon color="warning" />
+            {title}
+          </Box>
+        )}
+        {!showWarningIcon && title}
       </DialogTitle>
+      
       <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
+        <DialogContentText sx={{ mb: textField ? 2 : 0 }}>
+          {message}
+        </DialogContentText>
+        
+        {textField && (
+          <TextField
+            fullWidth
+            label={textField.label}
+            type={textField.type || 'text'}
+            value={textField.value}
+            onChange={textField.onChange}
+            helperText={textField.helperText}
+            disabled={isLoading}
+            autoFocus
+          />
+        )}
       </DialogContent>
+      
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} disabled={isLoading}>
           {cancelText}
@@ -50,7 +73,7 @@ const ConfirmDialog = ({
           variant="contained"
           color={confirmColor}
           disabled={isLoading}
-          startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+          startIcon={isLoading && <CircularProgress size={20} color="inherit" />}
         >
           {isLoading ? 'Processing...' : confirmText}
         </Button>

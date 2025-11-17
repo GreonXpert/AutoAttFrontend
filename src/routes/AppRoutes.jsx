@@ -23,6 +23,7 @@ import EditHistoryPage from '../pages/admin/EditHistoryPage';
 // Super Admin Pages
 import SuperAdminDashboardPage from '../pages/superAdmin/SuperAdminDashboardPage';
 import ManageAdminsPage from '../pages/superAdmin/ManageAdminsPage';
+import AdminDetailsPage from '../pages/superAdmin/AdminDetailsPage';
 import StatisticsPage from '../pages/superAdmin/StatisticsPage';
 import LoginLogsPage from '../pages/superAdmin/LoginLogsPage';
 
@@ -70,8 +71,14 @@ const AppRoutes = () => {
         {/* Protected Super Admin Routes with MainLayout */}
         <Route element={<SuperAdminRoute />}>
           <Route element={<MainLayout />}>
+            {/* Super Admin Dashboard */}
             <Route path="/super-admin/dashboard" element={<SuperAdminDashboardPage />} />
+            
+            {/* Admin Management */}
             <Route path="/super-admin/admins" element={<ManageAdminsPage />} />
+            <Route path="/super-admin/admins/:id" element={<AdminDetailsPage />} />
+            
+            {/* Statistics & Logs */}
             <Route path="/super-admin/statistics" element={<StatisticsPage />} />
             <Route path="/super-admin/login-logs" element={<LoginLogsPage />} />
           </Route>
