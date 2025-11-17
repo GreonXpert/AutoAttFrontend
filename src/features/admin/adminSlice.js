@@ -1,12 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import adminService from './adminService';
+import attendanceService from './attendanceService';
 
 // Initial state
 const initialState = {
-  profile: null,
-  dashboardStats: null,
-  loginHistory: [],
-  editHistory: [],
+  attendanceRecords: [],
+  selectedAttendance: null,
+  employeeAttendance: [],
+  attendanceReport: null,
+  attendanceSummary: null,
+  attendanceStats: null,
+  pagination: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  },
   isLoading: false,
   isSuccess: false,
   isError: false,
@@ -15,87 +23,153 @@ const initialState = {
 
 // Async thunks
 
-// Get profile
-export const getProfile = createAsyncThunk(
-  'admin/getProfile',
-  async (_, thunkAPI) => {
+// Mark attendance (Check-in)
+export const markAttendance = createAsyncThunk(
+  'attendance/markAttendance',
+  async (attendanceData, thunkAPI) => {
     try {
-      return await adminService.getProfile();
+      return await attendanceService.markAttendance(attendanceData);
     } catch (error) {
-      const message = error.message || 'Failed to fetch profile';
+      const message = error.message || 'Failed to mark attendance';
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Update profile
-export const updateProfile = createAsyncThunk(
-  'admin/updateProfile',
-  async (profileData, thunkAPI) => {
+// Mark checkout
+export const markCheckout = createAsyncThunk(
+  'attendance/markCheckout',
+  async ({ attendanceId, checkoutData }, thunkAPI) => {
     try {
-      return await adminService.updateProfile(profileData);
+      return await attendanceService.markCheckout(attendanceId, checkoutData);
     } catch (error) {
-      const message = error.message || 'Failed to update profile';
+      const message = error.message || 'Failed to mark checkout';
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Delete profile image
-export const deleteProfileImage = createAsyncThunk(
-  'admin/deleteProfileImage',
-  async (_, thunkAPI) => {
+// Get all attendance records
+export const getAllAttendance = createAsyncThunk(
+  'attendance/getAllAttendance',
+  async (params, thunkAPI) => {
     try {
-      return await adminService.deleteProfileImage();
+      return await attendanceService.getAllAttendance(params);
     } catch (error) {
-      const message = error.message || 'Failed to delete profile image';
+      const message = error.message || 'Failed to fetch attendance records';
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Get login history
-export const getLoginHistory = createAsyncThunk(
-  'admin/getLoginHistory',
-  async (_, thunkAPI) => {
+// Get attendance by ID
+export const getAttendanceById = createAsyncThunk(
+  'attendance/getAttendanceById',
+  async (id, thunkAPI) => {
     try {
-      return await adminService.getLoginHistory();
+      return await attendanceService.getAttendanceById(id);
     } catch (error) {
-      const message = error.message || 'Failed to fetch login history';
+      const message = error.message || 'Failed to fetch attendance';
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Get edit history
-export const getEditHistory = createAsyncThunk(
-  'admin/getEditHistory',
-  async (_, thunkAPI) => {
+// Get employee attendance
+export const getEmployeeAttendance = createAsyncThunk(
+  'attendance/getEmployeeAttendance',
+  async ({ employeeId, params }, thunkAPI) => {
     try {
-      return await adminService.getEditHistory();
+      return await attendanceService.getEmployeeAttendance(employeeId, params);
     } catch (error) {
-      const message = error.message || 'Failed to fetch edit history';
+      const message = error.message || 'Failed to fetch employee attendance';
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Get dashboard stats
-export const getDashboardStats = createAsyncThunk(
-  'admin/getDashboardStats',
-  async (_, thunkAPI) => {
+// Get attendance report
+export const getAttendanceReport = createAsyncThunk(
+  'attendance/getAttendanceReport',
+  async (params, thunkAPI) => {
     try {
-      return await adminService.getDashboardStats();
+      return await attendanceService.getAttendanceReport(params);
     } catch (error) {
-      const message = error.message || 'Failed to fetch dashboard stats';
+      const message = error.message || 'Failed to fetch attendance report';
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Admin slice
-const adminSlice = createSlice({
-  name: 'admin',
+// Get attendance summary
+export const getAttendanceSummary = createAsyncThunk(
+  'attendance/getAttendanceSummary',
+  async (params, thunkAPI) => {
+    try {
+      return await attendanceService.getAttendanceSummary(params);
+    } catch (error) {
+      const message = error.message || 'Failed to fetch attendance summary';
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Get attendance statistics
+export const getAttendanceStats = createAsyncThunk(
+  'attendance/getAttendanceStats',
+  async (params, thunkAPI) => {
+    try {
+      return await attendanceService.getAttendanceStats(params);
+    } catch (error) {
+      const message = error.message || 'Failed to fetch attendance statistics';
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Update attendance
+export const updateAttendance = createAsyncThunk(
+  'attendance/updateAttendance',
+  async ({ id, attendanceData }, thunkAPI) => {
+    try {
+      return await attendanceService.updateAttendance(id, attendanceData);
+    } catch (error) {
+      const message = error.message || 'Failed to update attendance';
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Delete attendance
+export const deleteAttendance = createAsyncThunk(
+  'attendance/deleteAttendance',
+  async (id, thunkAPI) => {
+    try {
+      await attendanceService.deleteAttendance(id);
+      return id;
+    } catch (error) {
+      const message = error.message || 'Failed to delete attendance';
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Export attendance
+export const exportAttendance = createAsyncThunk(
+  'attendance/exportAttendance',
+  async (params, thunkAPI) => {
+    try {
+      return await attendanceService.exportAttendance(params);
+    } catch (error) {
+      const message = error.message || 'Failed to export attendance';
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Attendance slice
+const attendanceSlice = createSlice({
+  name: 'attendance',
   initialState,
   reducers: {
     reset: (state) => {
@@ -108,98 +182,188 @@ const adminSlice = createSlice({
       state.isError = false;
       state.message = '';
     },
+    clearSelectedAttendance: (state) => {
+      state.selectedAttendance = null;
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Get Profile
-      .addCase(getProfile.pending, (state) => {
+      // Mark Attendance
+      .addCase(markAttendance.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getProfile.fulfilled, (state, action) => {
+      .addCase(markAttendance.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.profile = action.payload;
+        state.message = 'Attendance marked successfully';
       })
-      .addCase(getProfile.rejected, (state, action) => {
+      .addCase(markAttendance.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
 
-      // Update Profile
-      .addCase(updateProfile.pending, (state) => {
+      // Mark Checkout
+      .addCase(markCheckout.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(updateProfile.fulfilled, (state, action) => {
+      .addCase(markCheckout.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.profile = action.payload;
-        state.message = 'Profile updated successfully';
+        state.message = 'Checkout marked successfully';
       })
-      .addCase(updateProfile.rejected, (state, action) => {
+      .addCase(markCheckout.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
 
-      // Delete Profile Image
-      .addCase(deleteProfileImage.pending, (state) => {
+      // Get All Attendance
+      .addCase(getAllAttendance.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(deleteProfileImage.fulfilled, (state) => {
+      .addCase(getAllAttendance.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        if (state.profile) {
-          state.profile.profileImage = null;
-        }
-        state.message = 'Profile image deleted successfully';
+        state.attendanceRecords = action.payload.data;
+        state.pagination = {
+          page: action.payload.currentPage,
+          limit: action.payload.limit,
+          total: action.payload.total,
+          totalPages: action.payload.totalPages,
+        };
       })
-      .addCase(deleteProfileImage.rejected, (state, action) => {
+      .addCase(getAllAttendance.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
 
-      // Get Login History
-      .addCase(getLoginHistory.pending, (state) => {
+      // Get Attendance By ID
+      .addCase(getAttendanceById.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getLoginHistory.fulfilled, (state, action) => {
+      .addCase(getAttendanceById.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.loginHistory = action.payload;
+        state.selectedAttendance = action.payload;
       })
-      .addCase(getLoginHistory.rejected, (state, action) => {
+      .addCase(getAttendanceById.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
 
-      // Get Edit History
-      .addCase(getEditHistory.pending, (state) => {
+      // Get Employee Attendance
+      .addCase(getEmployeeAttendance.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getEditHistory.fulfilled, (state, action) => {
+      .addCase(getEmployeeAttendance.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.editHistory = action.payload;
+        state.employeeAttendance = action.payload.data;
+        state.pagination = {
+          page: action.payload.currentPage,
+          limit: action.payload.limit,
+          total: action.payload.total,
+          totalPages: action.payload.totalPages,
+        };
       })
-      .addCase(getEditHistory.rejected, (state, action) => {
+      .addCase(getEmployeeAttendance.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
 
-      // Get Dashboard Stats
-      .addCase(getDashboardStats.pending, (state) => {
+      // Get Attendance Report
+      .addCase(getAttendanceReport.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getDashboardStats.fulfilled, (state, action) => {
+      .addCase(getAttendanceReport.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.dashboardStats = action.payload;
+        state.attendanceReport = action.payload;
       })
-      .addCase(getDashboardStats.rejected, (state, action) => {
+      .addCase(getAttendanceReport.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      // Get Attendance Summary
+      .addCase(getAttendanceSummary.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getAttendanceSummary.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.attendanceSummary = action.payload;
+      })
+      .addCase(getAttendanceSummary.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      // Get Attendance Stats
+      .addCase(getAttendanceStats.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getAttendanceStats.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.attendanceStats = action.payload;
+      })
+      .addCase(getAttendanceStats.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      // Update Attendance
+      .addCase(updateAttendance.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateAttendance.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.message = 'Attendance updated successfully';
+        state.selectedAttendance = action.payload;
+      })
+      .addCase(updateAttendance.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      // Delete Attendance
+      .addCase(deleteAttendance.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteAttendance.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.message = 'Attendance deleted successfully';
+        state.attendanceRecords = state.attendanceRecords.filter(
+          (record) => record._id !== action.payload
+        );
+      })
+      .addCase(deleteAttendance.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      // Export Attendance
+      .addCase(exportAttendance.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(exportAttendance.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.message = 'Attendance exported successfully';
+      })
+      .addCase(exportAttendance.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
@@ -207,5 +371,5 @@ const adminSlice = createSlice({
   },
 });
 
-export const { reset, clearError } = adminSlice.actions;
-export default adminSlice.reducer;
+export const { reset, clearError, clearSelectedAttendance } = attendanceSlice.actions;
+export default attendanceSlice.reducer;
