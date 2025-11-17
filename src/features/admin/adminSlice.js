@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import attendanceService from './attendanceService';
+import attendanceService from '../attendance/attendanceService';
 
 // Initial state
 const initialState = {
