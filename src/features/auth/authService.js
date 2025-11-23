@@ -14,17 +14,38 @@ const AUTH_ENDPOINTS = {
 // Login user
 const login = async (credentials) => {
   try {
-    const response = await apiService.post(AUTH_ENDPOINTS.LOGIN, credentials);
+    // ✅ Transform emailOrUsername to email OR username
+    const loginData = {
+      password: credentials.password
+    };
+
+    // Check if input is email (contains @) or username
+    if (credentials.emailOrUsername) {
+      if (credentials.emailOrUsername.includes('@')) {
+        loginData.email = credentials.emailOrUsername;
+      } else {
+        loginData.username = credentials.emailOrUsername;
+      }
+    } else {
+      // Fallback if using separate email/username fields
+      if (credentials.email) loginData.email = credentials.email;
+      if (credentials.username) loginData.username = credentials.username;
+    }
+
+    const response = await apiService.post(AUTH_ENDPOINTS.LOGIN, loginData);
     
     if (response.success && response.data) {
-      // Store token and user data in localStorage
-      localStorage.setItem('token', response.data.accessToken);
+      // ✅ FIX: Backend sends "token", not "accessToken"
+      localStorage.setItem('token', response.data.token);
       localStorage.setItem('refreshToken', response.data.refreshToken);
       localStorage.setItem('user', JSON.stringify(response.data.admin));
+      
+      console.log('✅ Token saved to localStorage:', response.data.token);
     }
     
     return response.data;
   } catch (error) {
+    console.error('❌ Login error:', error);
     throw error;
   }
 };
@@ -57,12 +78,12 @@ const refreshToken = async (refreshToken) => {
       refreshToken,
     });
     
-    if (response.success && response.data) {
-      // Update token in localStorage
-      localStorage.setItem('token', response.data.accessToken);
+    if (response.success && response.token) {
+      // ✅ FIX: Backend sends "token", not "accessToken"
+      localStorage.setItem('token', response.token);
     }
     
-    return response.data;
+    return response;
   } catch (error) {
     // If refresh fails, clear everything
     localStorage.removeItem('token');

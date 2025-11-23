@@ -5,15 +5,13 @@ import superAdminReducer from '../features/superAdmin/superAdminSlice';
 import notificationReducer from '../features/notifications/notificationSlice';
 import attendanceReducer from '../features/attendance/attendanceSlice';
 import fingerprintReducer from '../features/fingerprint/fingerprintSlice';
-import adminProfileReducer from '../features/admin/adminProfileSlice'; // NEW - This handles PROFILE
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    admin: adminReducer,
+    admin: adminReducer, // ✅ Now contains BOTH attendance AND admin profile
     superAdmin: superAdminReducer,
     notifications: notificationReducer,
-    adminProfile: adminProfileReducer,
     attendance: attendanceReducer,
     fingerprint: fingerprintReducer,
   },

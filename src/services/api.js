@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 // Create axios instance
 const api = axios.create({
@@ -18,6 +17,9 @@ api.interceptors.request.use(
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('🔐 Token attached to request:', token.substring(0, 20) + '...');
+    } else {
+      console.warn('⚠️ No token found in localStorage');
     }
     
     return config;
@@ -49,19 +51,26 @@ api.interceptors.response.use(
             { refreshToken }
           );
 
-          const { accessToken } = response.data;
+          // ✅ FIX: Backend sends "token", not "accessToken"
+          const newToken = response.data.token;
 
-          // Save new token
-          localStorage.setItem('token', accessToken);
+          if (newToken) {
+            // Save new token
+            localStorage.setItem('token', newToken);
 
-          // Update authorization header
-          api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-          originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+            // Update authorization header
+            api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
 
-          // Retry original request
-          return api(originalRequest);
+            console.log('🔄 Token refreshed successfully');
+
+            // Retry original request
+            return api(originalRequest);
+          }
         }
       } catch (refreshError) {
+        console.error('❌ Token refresh failed, logging out...', refreshError);
+        
         // Refresh token failed - logout user
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
@@ -79,6 +88,12 @@ api.interceptors.response.use(
       error.response?.data?.message ||
       error.message ||
       'An unexpected error occurred';
+
+    console.error('❌ API Error:', {
+      status: error.response?.status,
+      message,
+      url: error.config?.url
+    });
 
     return Promise.reject({
       message,
@@ -140,12 +155,14 @@ export const apiService = {
     }
   },
 
-  // Upload file with FormData
-  upload: async (url, formData, onUploadProgress = null) => {
+  // File upload with progress
+  upload: async (url, formData, onUploadProgress, config = {}) => {
     try {
       const response = await api.post(url, formData, {
+        ...config,
         headers: {
           'Content-Type': 'multipart/form-data',
+          ...config.headers,
         },
         onUploadProgress,
       });
@@ -156,4 +173,5 @@ export const apiService = {
   },
 };
 
+// Export the axios instance for direct use if needed
 export default api;

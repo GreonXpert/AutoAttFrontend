@@ -165,7 +165,8 @@ const authSlice = createSlice({
         state.isSuccess = true;
         state.isAuthenticated = true;
         state.user = action.payload.admin;
-        state.token = action.payload.accessToken;
+        // ✅ FIX: Backend sends "token", not "accessToken"
+        state.token = action.payload.token;
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
@@ -199,7 +200,8 @@ const authSlice = createSlice({
 
       // Refresh Token
       .addCase(refreshToken.fulfilled, (state, action) => {
-        state.token = action.payload.accessToken;
+        // ✅ FIX: Backend sends "token", not "accessToken"
+        state.token = action.payload.token;
       })
       .addCase(refreshToken.rejected, (state) => {
         state.user = null;

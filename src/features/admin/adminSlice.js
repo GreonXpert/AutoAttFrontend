@@ -1,31 +1,135 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 import attendanceService from '../attendance/attendanceService';
 
-// Initial state
-const initialState = {
-  attendanceRecords: [],
-  selectedAttendance: null,
-  employeeAttendance: [],
-  attendanceReport: null,
-  attendanceSummary: null,
-  attendanceStats: null,
-  pagination: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
-  },
-  isLoading: false,
-  isSuccess: false,
-  isError: false,
-  message: '',
-};
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-// Async thunks
+// ============================================================================
+// ADMIN PROFILE ASYNC THUNKS
+// ============================================================================
+
+// Get admin profile
+export const getProfile = createAsyncThunk(
+  'admin/getProfile',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/admin/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch profile'
+      );
+    }
+  }
+);
+
+// Update admin profile
+export const updateProfile = createAsyncThunk(
+  'admin/updateProfile',
+  async (formData, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `${API_URL}/admin/profile`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to update profile'
+      );
+    }
+  }
+);
+
+// Get dashboard statistics
+export const getDashboardStats = createAsyncThunk(
+  'admin/getDashboardStats',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/admin/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch dashboard stats'
+      );
+    }
+  }
+);
+
+// Get login history
+export const getLoginHistory = createAsyncThunk(
+  'admin/getLoginHistory',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/admin/login-history`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch login history'
+      );
+    }
+  }
+);
+
+// Get edit history
+export const getEditHistory = createAsyncThunk(
+  'admin/getEditHistory',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${API_URL}/admin/edit-history`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch edit history'
+      );
+    }
+  }
+);
+
+// Delete profile image
+export const deleteProfileImage = createAsyncThunk(
+  'admin/deleteProfileImage',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.delete(`${API_URL}/admin/profile/image`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to delete profile image'
+      );
+    }
+  }
+);
+
+// ============================================================================
+// ATTENDANCE ASYNC THUNKS
+// ============================================================================
 
 // Mark attendance (Check-in)
 export const markAttendance = createAsyncThunk(
-  'attendance/markAttendance',
+  'admin/markAttendance',
   async (attendanceData, thunkAPI) => {
     try {
       return await attendanceService.markAttendance(attendanceData);
@@ -38,7 +142,7 @@ export const markAttendance = createAsyncThunk(
 
 // Mark checkout
 export const markCheckout = createAsyncThunk(
-  'attendance/markCheckout',
+  'admin/markCheckout',
   async ({ attendanceId, checkoutData }, thunkAPI) => {
     try {
       return await attendanceService.markCheckout(attendanceId, checkoutData);
@@ -51,7 +155,7 @@ export const markCheckout = createAsyncThunk(
 
 // Get all attendance records
 export const getAllAttendance = createAsyncThunk(
-  'attendance/getAllAttendance',
+  'admin/getAllAttendance',
   async (params, thunkAPI) => {
     try {
       return await attendanceService.getAllAttendance(params);
@@ -64,7 +168,7 @@ export const getAllAttendance = createAsyncThunk(
 
 // Get attendance by ID
 export const getAttendanceById = createAsyncThunk(
-  'attendance/getAttendanceById',
+  'admin/getAttendanceById',
   async (id, thunkAPI) => {
     try {
       return await attendanceService.getAttendanceById(id);
@@ -77,7 +181,7 @@ export const getAttendanceById = createAsyncThunk(
 
 // Get employee attendance
 export const getEmployeeAttendance = createAsyncThunk(
-  'attendance/getEmployeeAttendance',
+  'admin/getEmployeeAttendance',
   async ({ employeeId, params }, thunkAPI) => {
     try {
       return await attendanceService.getEmployeeAttendance(employeeId, params);
@@ -90,7 +194,7 @@ export const getEmployeeAttendance = createAsyncThunk(
 
 // Get attendance report
 export const getAttendanceReport = createAsyncThunk(
-  'attendance/getAttendanceReport',
+  'admin/getAttendanceReport',
   async (params, thunkAPI) => {
     try {
       return await attendanceService.getAttendanceReport(params);
@@ -103,7 +207,7 @@ export const getAttendanceReport = createAsyncThunk(
 
 // Get attendance summary
 export const getAttendanceSummary = createAsyncThunk(
-  'attendance/getAttendanceSummary',
+  'admin/getAttendanceSummary',
   async (params, thunkAPI) => {
     try {
       return await attendanceService.getAttendanceSummary(params);
@@ -116,7 +220,7 @@ export const getAttendanceSummary = createAsyncThunk(
 
 // Get attendance statistics
 export const getAttendanceStats = createAsyncThunk(
-  'attendance/getAttendanceStats',
+  'admin/getAttendanceStats',
   async (params, thunkAPI) => {
     try {
       return await attendanceService.getAttendanceStats(params);
@@ -129,7 +233,7 @@ export const getAttendanceStats = createAsyncThunk(
 
 // Update attendance
 export const updateAttendance = createAsyncThunk(
-  'attendance/updateAttendance',
+  'admin/updateAttendance',
   async ({ id, attendanceData }, thunkAPI) => {
     try {
       return await attendanceService.updateAttendance(id, attendanceData);
@@ -142,7 +246,7 @@ export const updateAttendance = createAsyncThunk(
 
 // Delete attendance
 export const deleteAttendance = createAsyncThunk(
-  'attendance/deleteAttendance',
+  'admin/deleteAttendance',
   async (id, thunkAPI) => {
     try {
       await attendanceService.deleteAttendance(id);
@@ -156,7 +260,7 @@ export const deleteAttendance = createAsyncThunk(
 
 // Export attendance
 export const exportAttendance = createAsyncThunk(
-  'attendance/exportAttendance',
+  'admin/exportAttendance',
   async (params, thunkAPI) => {
     try {
       return await attendanceService.exportAttendance(params);
@@ -167,9 +271,46 @@ export const exportAttendance = createAsyncThunk(
   }
 );
 
-// Attendance slice
-const attendanceSlice = createSlice({
-  name: 'attendance',
+// ============================================================================
+// INITIAL STATE
+// ============================================================================
+
+const initialState = {
+  // Admin Profile State
+  profile: null,
+  dashboardStats: null,
+  loginHistory: [],
+  editHistory: [],
+  
+  // Attendance State
+  attendanceRecords: [],
+  selectedAttendance: null,
+  employeeAttendance: [],
+  attendanceReport: null,
+  attendanceSummary: null,
+  attendanceStats: null,
+  
+  // Pagination
+  pagination: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  },
+  
+  // Loading/Success/Error States
+  isLoading: false,
+  isSuccess: false,
+  isError: false,
+  message: '',
+};
+
+// ============================================================================
+// ADMIN SLICE
+// ============================================================================
+
+const adminSlice = createSlice({
+  name: 'admin',
   initialState,
   reducers: {
     reset: (state) => {
@@ -188,6 +329,108 @@ const attendanceSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // ========================================================================
+      // ADMIN PROFILE REDUCERS
+      // ========================================================================
+      
+      // Get Profile
+      .addCase(getProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.profile = action.payload;
+      })
+      .addCase(getProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      
+      // Update Profile
+      .addCase(updateProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.profile = action.payload;
+        state.message = 'Profile updated successfully';
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      
+      // Get Dashboard Stats
+      .addCase(getDashboardStats.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getDashboardStats.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.dashboardStats = action.payload;
+      })
+      .addCase(getDashboardStats.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      
+      // Get Login History
+      .addCase(getLoginHistory.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getLoginHistory.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.loginHistory = action.payload;
+      })
+      .addCase(getLoginHistory.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      
+      // Get Edit History
+      .addCase(getEditHistory.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getEditHistory.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.editHistory = action.payload;
+      })
+      .addCase(getEditHistory.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      
+      // Delete Profile Image
+      .addCase(deleteProfileImage.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteProfileImage.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        if (state.profile) {
+          state.profile.profileImage = null;
+        }
+        state.message = 'Profile image deleted successfully';
+      })
+      .addCase(deleteProfileImage.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      // ========================================================================
+      // ATTENDANCE REDUCERS
+      // ========================================================================
+      
       // Mark Attendance
       .addCase(markAttendance.pending, (state) => {
         state.isLoading = true;
@@ -371,5 +614,5 @@ const attendanceSlice = createSlice({
   },
 });
 
-export const { reset, clearError, clearSelectedAttendance } = attendanceSlice.actions;
-export default attendanceSlice.reducer;
+export const { reset, clearError, clearSelectedAttendance } = adminSlice.actions;
+export default adminSlice.reducer;
